@@ -1,8 +1,9 @@
-from pygnmi.client import gNMIclient
+from pygnmi.client import gNMIclient, telemetryParser
 from google.protobuf import json_format
-from .processor import process_update
+from .processor import process_update, process_attr_sets, proc_attr_sets, process_routes
 import threading
 from prometheus_client import start_http_server
+
 
 class gnmi_bgp_reader:
     def __init__(self, host, port, auth_user, auth_pass, insecure, prometheus_port, vrf=None, afi="ipv4"):
@@ -49,22 +50,23 @@ class gnmi_bgp_reader:
             telementry_stream = gc.subscribe(subscribe=self.subscribe_routes)
             for telementry_entry in telementry_stream:
                 telementry_entry = json_format.MessageToDict(telementry_entry, preserving_proto_field_name=True)
-                #print(telementry_entry)
-                process_update(telementry_entry)
-
+                process_routes(telementry_entry)
 
     def _attr_update_loop(self):
-        pass
+        with gNMIclient(target= (self.host, self.port), 
+                    username= self.auth_user, password = self.auth_pass, insecure=self.insecure) as gc:
+            telementry_stream = gc.subscribe(subscribe=self.subscribe_attr)
+            for telementry_entry in telementry_stream:
+                telementry_entry = json_format.MessageToDict(telementry_entry, preserving_proto_field_name=True)
+                proc_attr_sets(telementry_entry)
 
     def start(self):
         start_http_server(self.prometheus_port)
         threads = [
             threading.Thread(target=self._route_update_loop, daemon=True),
-            #threading.Thread(target=self._attr_loop,  daemon=True),
+            threading.Thread(target=self._attr_update_loop,  daemon=True),
         ]
         for t in threads:
             t.start()
-
-        # 3) block forever (or until interrupted)
         for t in threads:
             t.join()
