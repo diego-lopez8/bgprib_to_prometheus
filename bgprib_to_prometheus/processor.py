@@ -8,7 +8,7 @@ def process_routes(telemetry_entry):
     sync = telemetry_entry.get("sync_response")
     if sync:
         print("responses synced.")
-    if update:
+    elif update:
         rk = ()
         update_action = update.get('update', [])
         # TODO: understand delete functionality
@@ -74,6 +74,9 @@ def process_routes(telemetry_entry):
                     rks_modified.append(rk)
             for rk in rks_modified:
                 update_metrics(rk, bgp_rib[rk])
+    else:
+        # is there some other behavior?
+        print(telemetry_entry)
 
 def proc_attr_sets(telemetry_entry):
     """
@@ -87,7 +90,7 @@ def proc_attr_sets(telemetry_entry):
     sync = telemetry_entry.get("sync_response")
     if sync:
         print("responses synced.")
-    if update:
+    elif update:
         attr_idx = ''
         update_action = update.get('update', [])
         # TODO: understand delete functionality
@@ -122,6 +125,8 @@ def proc_attr_sets(telemetry_entry):
                         # do we need this?
                         bgp_attr_sets[attr_idx] = attrset
                         update_as_path_metrics(attrset)
+    else:
+        print(telemetry_entry)
 
 # depreciated
 def process_attr_sets(telemetry_entry):
