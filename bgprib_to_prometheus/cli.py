@@ -10,7 +10,7 @@ def main():
     Reader class to begin collecting metrics from the target.
     """
     p = argparse.ArgumentParser(prog='OpenConfig BGP RIB over gNMI to Prometheus. Takes an endpoint which implements openconfig_bgp_rib exposed over gNMI, processes it and outputs to various prometheus metrics.')
-    p.add_argument("--host", required=True, help="Host. Can be a DNS or IP. Specify the port with --port.")
+    p.add_argument("--host", required=True, help="Host. Can be a Domain Name or IP. Specify the port with --port.")
     p.add_argument("--port", required=True, help="Port on the host which is the endpoint for gNMI.")
     p.add_argument("--username", required=True, help="Username to authenticate with.")
     p.add_argument("--password", required=True, help="Password to authenticate with.")
