@@ -2,7 +2,6 @@ from prometheus_client import Gauge, Info, REGISTRY
 from .models import BgpRoute, RouteKey, BgpAttrSet
 from typing import List, Dict, Tuple
 
-
 bgp_as_path_hop = Gauge(
     'bgp_as_path_hop',
     'AS path number per hop',
@@ -42,6 +41,7 @@ route_info = Info(
     'Additional BGP route info',
     ['prefix', 'origin', 'path_id']
 )
+
 # is there a way to remove metrics only given one single label?
 def update_as_path_metrics(attrset: BgpAttrSet):
     # remove the complete path for a metric given the attr index
@@ -67,7 +67,6 @@ def update_metrics(rk: RouteKey, route: BgpRoute):
 def remove_metrics(rk: RouteKey):
     prefix, origin, path_id = rk
     path_id = str(path_id)
-
     route_valid_gauge.remove(prefix, origin, path_id)
     route_attr_gauge.remove(prefix, origin, path_id)
     route_comm_gauge.remove(prefix, origin, path_id)
